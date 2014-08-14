@@ -1,0 +1,72 @@
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass{scrartcl}
+
+\usepackage{siunitx} % Provides the \SI{}{} command for typesetting SI units
+\usepackage{booktabs}
+
+\usepackage{hyperref}
+\usepackage{xspace}
+\usepackage{color}
+
+\usepackage{graphicx} % Required for the inclusion of images
+\usepackage{listings}
+\setlength\parindent{0pt} % Removes all indentation from paragraphs
+
+\renewcommand{\labelenumi}{\alph{enumi}.} % Make numbering in the enumerate environment by letter rather than number (e.g. section 6)
+
+%----------------------------------------------------------------------------------------
+%	DOCUMENT INFORMATION
+%----------------------------------------------------------------------------------------
+
+\input{doc/usermanual/symbols.tex}
+
+\title{pxar User Manual} % Title
+
+\author{
+} % Author names
+
+\date{\today} % Date for the report
+
+\begin{document}
+
+\maketitle % Insert the title, author and date
+
+
+\begin{abstract}
+The goal of this document is to provide a user manual for operation of
+PSI46 Chips and Modules with the Digital Testboard (DTB).
+\end{abstract}
+
+\newpage
+% Table Of Contents
+\tableofcontents
+
+\newpage
+
+\input{doc/usermanual/introduction.tex}
+\newpage
+\input{doc/usermanual/hwOverview.tex}
+\newpage
+\input{doc/usermanual/swOverview.tex}
+\newpage
+\input{doc/usermanual/tutorial.tex}
+\newpage
+\input{doc/usermanual/tests.tex}
+\newpage
+\input{doc/usermanual/usertests.tex}
+
+\newpage
+\clearpage
+\phantomsection
+%\addcontentsline{toc}{chapter}{References}
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+  \input{doc/usermanual/references.tex}
+\end{thebibliography}  
+
+
+\end{document}
