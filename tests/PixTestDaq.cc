@@ -27,7 +27,10 @@ PixTestDaq::PixTestDaq(PixSetup *a, std::string name) : PixTest(a, name), fParNt
 //----------------------------------------------------------
 PixTestDaq::PixTestDaq() : PixTest() {
   LOG(logDEBUG) << "PixTestDaq ctor()";
-  fTree = 0; 
+  fTree = 0;
+  fSPixRow = 20;
+  fSPixCol = 25;
+  fSPixRoc = 9; 
 }
 
 //----------------------------------------------------------
@@ -81,6 +84,9 @@ void PixTestDaq::runCommand(std::string command) {
 // ----------------------------------------------------------------------
 bool PixTestDaq::setParameter(string parName, string sval) {
 	bool found(false);
+	fSPixRow = 20;
+	fSPixCol = 25;
+	fSPixRoc = 9;
 	fParOutOfRange = false;
 	std::transform(parName.begin(), parName.end(), parName.begin(), ::tolower);
 	for (unsigned int i = 0; i < fParameters.size(); ++i) {
@@ -208,7 +214,7 @@ void PixTestDaq::setHistos(){
 
 // ----------------------------------------------------------------------
 void PixTestDaq::ProcessData(uint16_t numevents){
-
+	
 	LOG(logDEBUG) << "Getting Event Buffer";
 	std::vector<pxar::Event> daqdat;
 
@@ -230,6 +236,7 @@ void PixTestDaq::ProcessData(uint16_t numevents){
 	int pixCnt(0);
 	int idx(-1);
 	uint16_t q;
+	int entries = 0;
 	vector<uint8_t> rocIds = fApi->_dut->getEnabledRocIDs();
 	for (std::vector<pxar::Event>::iterator it = daqdat.begin(); it != daqdat.end(); ++it) {
 		pixCnt += it->pixels.size();
@@ -245,13 +252,20 @@ void PixTestDaq::ProcessData(uint16_t numevents){
 		for (unsigned int ipix = 0; ipix < it->pixels.size(); ++ipix) {
 			idx = getIdxFromId(it->pixels[ipix].roc_id);
 			if(idx == -1) {
-				LOG(logWARNING) << "PixTestDaq::ProcessData() wrong 'idx' value --> return";
-// original a				return;    			
-// original a			}
-			} else {   // replacment a
+			  LOG(logWARNING) << "PixTestDaq::ProcessData() wrong 'idx' value";
+			} else {
 			fHits[idx]->Fill(it->pixels[ipix].column, it->pixels[ipix].row);
 			fPhmap[idx]->Fill(it->pixels[ipix].column, it->pixels[ipix].row, it->pixels[ipix].getValue());
 			fPh[idx]->Fill(it->pixels[ipix].getValue());
+			
+			entries++;
+			
+			int myrow = static_cast<int>( it->pixels[ipix].row );
+			int mycol = static_cast<int>( it->pixels[ipix].column );	
+			int myroc = static_cast<int>( it->pixels[ipix].roc_id );
+			//LOG( logDEBUG ) << "ROW: " << myrow << " COL: " << mycol << " ROC: " << myroc;
+			//LOG( logDEBUG ) << "ROW: " << fSPixRow << " COL: " << fSPixCol << " ROC: " << fSPixRoc;
+			if( myroc == fSPixRoc ) if( myrow == fSPixRow ) if( mycol == fSPixCol ) fSPixCount = fSPixCount + 1;
 
 			if (fPhCalOK) {
 				q = static_cast<uint16_t>(fPhCal.vcal(it->pixels[ipix].roc_id, it->pixels[ipix].column,	
@@ -269,7 +283,7 @@ void PixTestDaq::ProcessData(uint16_t numevents){
 				fTreeEvent.pval[ipix] = it->pixels[ipix].getValue();
 				fTreeEvent.pq[ipix] = q;
 			}
-			}  // replacemt a
+			}
 		}
 	}
 	if (fParFillTree) fTree->Fill();
@@ -280,8 +294,10 @@ void PixTestDaq::ProcessData(uint16_t numevents){
 	fDisplayedHist = find(fHistList.begin(), fHistList.end(), h2);
 	PixTest::update();
 
+	//entries = static_cast<int>( fHits[0]->GetEntries() );
 	LOG(logINFO) << Form("events read: %6ld, pixels seen: %3d, hist entries: %4d",
-	                 daqdat.size(), pixCnt,	static_cast<int>(fHits[0]->GetEntries()));	
+	        daqdat.size(), pixCnt, entries);         
+		//daqdat.size(), pixCnt,	static_cast<int>(fHits[0]->GetEntries()));	
 }
 
 // ----------------------------------------------------------------------
@@ -300,6 +316,7 @@ void PixTestDaq::doTest() {
   fDirectory->cd();
   fPg_setup.clear();
   fTriggerCount = 0;
+  fSPixCount = 0;
 
   //Immediately stop if parameters not in range	
   if (fParOutOfRange) return;
@@ -313,10 +330,10 @@ void PixTestDaq::doTest() {
   if(fHistList.size() == 0) setHistos();  //to book histo only for the first 'doTest' (or after Clear).
 
 
-  //fApi->_dut->testAllPixels( false );
+  fApi->_dut->testAllPixels( false );
   //fApi->_dut->maskAllPixels( true );
-  //fApi->_dut->maskPixel( 6, 5, false, 8 );
-  //fApi->_dut->testPixel( 6, 5, true, 8 );
+  fApi->_dut->maskPixel( fSPixCol, fSPixRow, false, fSPixRoc );
+  fApi->_dut->testPixel( fSPixCol, fSPixRow, true, fSPixRoc );
 
   //To print on shell the number of masked pixels per ROC:
   vector<uint8_t> rocIds = fApi->_dut->getEnabledRocIDs();
@@ -333,9 +350,9 @@ void PixTestDaq::doTest() {
   uint16_t period = 28;
 
   //Set the pattern generator:
-  fApi->setPatternGenerator(fPg_setup);
-  //pgToDefault(); 
-  //LOG( logINFO ) << "Pattern Generator set to default KUtest";
+  //fApi->setPatternGenerator(fPg_setup);
+  pgToDefault(); 
+  LOG( logINFO ) << "Pattern Generator set to default KUtest";
   fApi->daqStart();
 
   //Send only one trigger to reset:
@@ -359,9 +376,9 @@ void PixTestDaq::doTest() {
   }
 
   //Set pattern generator:
-  fApi->setPatternGenerator(fPg_setup);
-  //pgToDefault(); 
-  //LOG(logINFO) << " Pattern generator set to default KUtest";
+  //fApi->setPatternGenerator(fPg_setup);
+  pgToDefault(); 
+  LOG(logINFO) << " Pattern generator set to default KUtest";
 
   fDaq_loop = true;
 
@@ -423,8 +440,10 @@ void PixTestDaq::doTest() {
 	}
   }
 
-  LOG( logINFO ) << "Ending Daq Readout::";
-  LOG(logINFO) << "Total Trigger = " << (int) fTriggerCount;
+  LOG( logINFO) << "Ending Daq Readout::";
+  LOG( logINFO) << "Total Trigger = " << (int) fTriggerCount;
+  LOG( logINFO) << "Pixel Count = " << (int) fSPixCount;
+  LOG( logINFO) << "Efficency = " << static_cast<double>(fSPixCount)/fTriggerCount;
   //std::vector<uint8_t> rocIds = fApi->_dut->getEnabledRocIDs();
   for (unsigned int i = 0 ; i < rocIds.size() ; i++){
   	LOG(logINFO) << Form( "Rate %d (MHz/cm^2): %.1f",i,fHits[i]->Integral(1,52)/static_cast<double>(fTriggerCount)/25./0.64*1000.);
