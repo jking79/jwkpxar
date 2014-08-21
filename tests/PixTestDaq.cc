@@ -28,9 +28,6 @@ PixTestDaq::PixTestDaq(PixSetup *a, std::string name) : PixTest(a, name), fParNt
 PixTestDaq::PixTestDaq() : PixTest() {
   LOG(logDEBUG) << "PixTestDaq ctor()";
   fTree = 0;
-  fSPixRow = 20;
-  fSPixCol = 25;
-  fSPixRoc = 9; 
 }
 
 //----------------------------------------------------------
@@ -84,9 +81,10 @@ void PixTestDaq::runCommand(std::string command) {
 // ----------------------------------------------------------------------
 bool PixTestDaq::setParameter(string parName, string sval) {
 	bool found(false);
-	fSPixRow = 20;
-	fSPixCol = 25;
-	fSPixRoc = 9;
+	singPixEffTest = true;
+	fSPixRow = 25;
+	fSPixCol = 40;
+	fSPixRoc = 10;
 	fParOutOfRange = false;
 	std::transform(parName.begin(), parName.end(), parName.begin(), ::tolower);
 	for (unsigned int i = 0; i < fParameters.size(); ++i) {
@@ -221,7 +219,7 @@ void PixTestDaq::ProcessData(uint16_t numevents){
 	if (numevents > 0) {
 		for (unsigned int i = 0; i < numevents; i++) {
 			pxar::Event evt = fApi->daqGetEvent();
-			fTriggerCount++;
+			//fTriggerCount++;
 			//Check if event is empty?
 			if (evt.pixels.size() > 0)
 				daqdat.push_back(evt);
@@ -229,7 +227,8 @@ void PixTestDaq::ProcessData(uint16_t numevents){
 	}
 	else{
 		daqdat = fApi->daqGetEventBuffer();
-		fTriggerCount += daqdat.size();
+		if( daqdat.size() == 0 ) return;
+		//fTriggerCount += daqdat.size();
 	}
 	LOG(logDEBUG) << "Processing Data: " << daqdat.size() << " events.";
 
@@ -240,7 +239,7 @@ void PixTestDaq::ProcessData(uint16_t numevents){
 	vector<uint8_t> rocIds = fApi->_dut->getEnabledRocIDs();
 	for (std::vector<pxar::Event>::iterator it = daqdat.begin(); it != daqdat.end(); ++it) {
 		pixCnt += it->pixels.size();
-
+		fTriggerCount++;
 		if (fParFillTree) {
 			fTreeEvent.header = it->header;
 			fTreeEvent.dac = 0;
@@ -266,7 +265,7 @@ void PixTestDaq::ProcessData(uint16_t numevents){
 			//LOG( logDEBUG ) << "ROW: " << myrow << " COL: " << mycol << " ROC: " << myroc;
 			//LOG( logDEBUG ) << "ROW: " << fSPixRow << " COL: " << fSPixCol << " ROC: " << fSPixRoc;
 			if( myroc == fSPixRoc ) if( myrow == fSPixRow ) if( mycol == fSPixCol ) fSPixCount = fSPixCount + 1;
-
+			
 			if (fPhCalOK) {
 				q = static_cast<uint16_t>(fPhCal.vcal(it->pixels[ipix].roc_id, it->pixels[ipix].column,	
 								      it->pixels[ipix].row, it->pixels[ipix].getValue()));
@@ -285,9 +284,9 @@ void PixTestDaq::ProcessData(uint16_t numevents){
 			}
 			}
 		}
+		if (fParFillTree) fTree->Fill();
 	}
-	if (fParFillTree) fTree->Fill();
-	
+
   	//to draw the hitsmap as 'online' check.
 	TH2D* h2 = (TH2D*)(fHits.back());
 	h2->Draw(getHistOption(h2).c_str());
@@ -331,9 +330,10 @@ void PixTestDaq::doTest() {
 
 
   fApi->_dut->testAllPixels( false );
-  //fApi->_dut->maskAllPixels( true );
-  fApi->_dut->maskPixel( fSPixCol, fSPixRow, false, fSPixRoc );
-  fApi->_dut->testPixel( fSPixCol, fSPixRow, true, fSPixRoc );
+  if( singPixEffTest ) {
+  	fApi->_dut->maskPixel( fSPixCol, fSPixRow, false, fSPixRoc );
+  	fApi->_dut->testPixel( fSPixCol, fSPixRow, true, fSPixRoc );
+  }
 
   //To print on shell the number of masked pixels per ROC:
   vector<uint8_t> rocIds = fApi->_dut->getEnabledRocIDs();
@@ -342,20 +342,21 @@ void PixTestDaq::doTest() {
 	  LOG(logINFO) << "PixTestDaq::    ROC " << static_cast<int>(iroc) << ": " << fApi->_dut->getNMaskedPixels(static_cast<int>(iroc));
   }  
 
-  // Start the DAQ:
-  //::::::::::::::::::::::::::::::::
+// Start the DAQ:
+//::::::::::::::::::::::::::::::::
 
-  //First send only a RES:
+//First send only a RES:
   fPg_setup.push_back(make_pair("resetroc", 0));     // PG_RESR b001000 
   uint16_t period = 28;
 
-  //Set the pattern generator:
-  //fApi->setPatternGenerator(fPg_setup);
-  pgToDefault(); 
-  LOG( logINFO ) << "Pattern Generator set to default KUtest";
+//Set the pattern generator:
+  if( ! singPixEffTest ) { fApi->setPatternGenerator(fPg_setup);} else { 
+	pgToDefault();
+  	LOG( logINFO ) << "Pattern Generator set to default KUtest";
+  }
   fApi->daqStart();
 
-  //Send only one trigger to reset:
+//Send only one trigger to reset:
   fApi->daqTrigger(1, period);
   LOG(logINFO) << "PixTestDaq::RES sent once ";
 
@@ -368,82 +369,95 @@ void PixTestDaq::doTest() {
   if(fParDelayTBM)
   	fApi->setTbmReg("delays",0x40); //FPix timing
 
-  //Set the pattern wrt the trigger frequency:
-  LOG(logINFO) << "PG set to have trigger frequency = " << fParTriggerFrequency << " kHz";
+//Set the pattern wrt the trigger frequency:
+//  LOG(logINFO) << "PG set to have trigger frequency = " << fParTriggerFrequency << " kHz";
   if (!setTrgFrequency(20)){
 	  FinalCleaning();
 	  return;
   }
 
-  //Set pattern generator:
-  //fApi->setPatternGenerator(fPg_setup);
-  pgToDefault(); 
-  LOG(logINFO) << " Pattern generator set to default KUtest";
-
-  fDaq_loop = true;
-
-  //Start the DAQ:
+//Set pattern generator:
+  if( ! singPixEffTest ){ fApi->setPatternGenerator(fPg_setup);} else { 
+  	pgToDefault();
+  	LOG(logINFO) << " Pattern generator set to default KUtest";
+  }
+//Start the DAQ:
   fApi->daqStart();
-
-  //If using number of triggers
+//If using number of triggers
   if(fParNtrig > 0) {
-
-	for (int i = 0; i < fParIter && fDaq_loop; i++) {
-		//Send the triggers:
-    	fApi->daqTrigger(fParNtrig);
-		gSystem->ProcessEvents();
-		ProcessData(0);
+	uint32_t fLoopCount = 0;
+      	int fPgPeriod = 250;
+	uint8_t perFull = 0;
+	LOG(logINFO) << "PixTestDaq:: start TriggerLoop with period " << fPgPeriod << " and duration " << fParIter*fParNtrig << " events";
+	double t = static_cast<double>(fPgPeriod * fParIter * fParNtrig ) / 40000000;
+	LOG(logINFO) << "And an approxamate run time of : " << t  << " seconds.";
+	for ( int i = 0; i < fParIter; i++) {
+			LOG(logINFO) << "Sending " << fParNtrig << " triggers.";
+		        fApi->daqTrigger(fParNtrig, fPgPeriod);
+		//check buffer status
+			fApi->daqStatus(perFull);
+		//process events
+			if( perFull > 50 ){
+				LOG(logINFO) << "Buffer at : " << (int)perFull << "%, Processing Data.";
+				ProcessData(0);
+				fApi->daqStatus(perFull);
+			}
+                LOG(logINFO) << "Buffer at : " << (int)perFull << "%";
+		fLoopCount += fParNtrig;
+		LOG(logINFO) << fLoopCount << " of " << fParNtrig* fParIter << " triggers sent.";
+		LOG(logINFO) << fTriggerCount << " of " << fParNtrig * fParIter << " events processed.";
 	}
 	fApi->daqStop();
-
+	ProcessData(0);
+        LOG(logINFO) << fLoopCount << " of " << fParNtrig * fParIter << " triggers sent.";
+        LOG(logINFO) << fTriggerCount << " of " << fParNtrig * fParIter << " events processed.";
+	
   } else {  //Use seconds
 
-	//Start trigger loop + buffer fill management:
-	int finalPeriod = fApi->daqTriggerLoop(0);  //Period is automatically set to the minimum by Api function
-	LOG(logINFO) << "PixTestDaq:: start TriggerLoop with period " << finalPeriod << " and duration " << fParSeconds << " seconds";
-
-	  //To control the buffer filling
-	uint8_t perFull;
+//Start trigger loop + buffer fill management:
+	int fPgPeriod = fApi->daqTriggerLoop( 250 );  //Period is automatically set to the minimum by Api function -> which is too small use 250
+	LOG(logINFO) << "PixTestDaq:: start TriggerLoop with period " << fPgPeriod << " and duration " << fParSeconds << " seconds";
+        LOG(logINFO) << "For a total approximte Trigger Count of : " << (int) (fParSeconds * 40000000 )/ fPgPeriod;
+//To control the buffer filling
+	uint8_t perFull = 0;
 	uint64_t diff = 0, timepaused = 0, timeff = 0;
 	timer t;
-	bool TotalTime = false;
-
+	fDaq_loop = true;
 	while (fDaq_loop){    //Check every n seconds if buffer is full less then 80%
-	  while (fApi->daqStatus(perFull) && perFull < 80 && fDaq_loop) {     //Pause and drain the buffer if almost full.
-		  timeff = t.get() - timepaused;
-		  LOG(logINFO) << "Elapsed time: " << timeff / 1000 << " seconds.";
-		  if (timeff / 1000 >= fParSeconds) {
-			  fDaq_loop = false;
-			  TotalTime = true;
-			  break;
-		  }
-		  LOG(logINFO) << "buffer not full, at " << (int)perFull << "%";
-		  gSystem->ProcessEvents();
-		  ProcessData();
-	  }
-	  if (fDaq_loop){
-		  LOG(logINFO) << "Buffer almost full, pausing triggers.";
-		  fApi->daqTriggerLoopHalt();
-		  diff = t.get();
-		  ProcessData(0);
-		  diff = t.get() - diff;
-		  timepaused += diff;
-		  LOG(logDEBUG) << "Readout time: " << timepaused / 1000 << " seconds.";
-		  LOG(logINFO) << "Resuming triggers for " << fParSeconds - (timeff/1000) << " seconds.";
-		  fApi->daqTriggerLoop(0);
-	  }
-	  else {
-		  if (TotalTime) { LOG(logINFO) << "PixTestDaq:: total time reached - DAQ stopped."; }
-		  fApi->daqStop();
-		  ProcessData(0);
-	  }
+		fApi->daqStatus( perFull );
+		timeff = t.get() - timepaused;
+		if (timeff / 1000 >= fParSeconds) {
+			fDaq_loop = false;
+			break;
+		}
+		if( timeff%1000 == 0 ) {
+			LOG(logINFO) << "Elapsed time: " << timeff / 1000 << " seconds.";
+		  	LOG(logINFO) << "buffer not full, at " << (int)perFull << "%";
+		}
+		if( perFull > 80 ){
+			LOG(logINFO) << "Buffer almost full, pausing triggers.";
+			fApi->daqTriggerLoopHalt();
+			diff = t.get();
+			ProcessData(0);
+			diff = t.get() - diff;
+			timepaused += diff;
+			LOG(logDEBUG) << "Readout time: " << timepaused / 1000 << " seconds.";
+			LOG(logINFO) << "Resuming triggers for " << fParSeconds - (timeff/1000) << " seconds.";
+			fApi->daqTriggerLoop( 250 );
+	   	}
 	}
+	LOG(logINFO) << "PixTestDaq:: total time reached - DAQ stopped.";// -b-
+	fApi->daqTriggerLoopHalt();
+	fApi->daqStop();
+	ProcessData(0);
   }
 
   LOG( logINFO) << "Ending Daq Readout::";
   LOG( logINFO) << "Total Trigger = " << (int) fTriggerCount;
-  LOG( logINFO) << "Pixel Count = " << (int) fSPixCount;
-  LOG( logINFO) << "Efficency = " << static_cast<double>(fSPixCount)/fTriggerCount;
+  if( singPixEffTest ) {
+  	LOG( logINFO) << "Pixel Count = " << (int) fSPixCount;
+  	LOG( logINFO) << "Efficency = " << static_cast<double>(fSPixCount)/fTriggerCount;
+  }
   //std::vector<uint8_t> rocIds = fApi->_dut->getEnabledRocIDs();
   for (unsigned int i = 0 ; i < rocIds.size() ; i++){
   	LOG(logINFO) << Form( "Rate %d (MHz/cm^2): %.1f",i,fHits[i]->Integral(1,52)/static_cast<double>(fTriggerCount)/25./0.64*1000.);

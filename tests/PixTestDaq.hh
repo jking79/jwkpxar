@@ -50,6 +50,7 @@ private:
   int fSPixRow;
   int fSPixCol; 
   int fSPixRoc;
+  bool singPixEffTest;
 
   std::vector<std::pair<std::string, uint8_t> > fPg_setup;
 

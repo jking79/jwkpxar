@@ -147,6 +147,10 @@ namespace pxar {
 
   public:
 
+    void  halTbPgSingle();
+    void  halTbFlush();
+    void  halTbCDelay( int fPgPeriod );
+
     /** Default constructor for the libpxar API
      *
      *  Fetches a new pxar::hal instance and opens the connection to the testboard
@@ -231,6 +235,8 @@ namespace pxar {
      *  names with a semicolon, e.g. "token;sync".
      */
     void setPatternGenerator(std::vector<std::pair<std::string, uint8_t> > pg_setup);
+
+    uint32_t getDefaultPGPeriod(); //  returns the minimum patteren generator period
 
     /** Initializer method for the DUT (attached devices)
      *

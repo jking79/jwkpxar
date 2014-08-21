@@ -323,12 +323,14 @@ namespace pxar {
      */
     void AllColumnsSetEnable(uint8_t roci2c, bool enable);
 
-  private:
+//  private:
 
     /** Private instance of the testboard RPC interface, routes all
      *  hardware access:
      */
     CTestboard * _testboard;
+
+  private:
 
     /** Initialization status of the HAL instance, marks the "ready for
      *  operations" status

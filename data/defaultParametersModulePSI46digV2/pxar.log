@@ -1,0 +1,101 @@
+[17:33:40.529]     INFO:       reading data/defaultParametersModulePSI46digV2/dacParameters_C0.dat
+[17:33:40.531]     INFO:       reading data/defaultParametersModulePSI46digV2/dacParameters_C1.dat
+[17:33:40.533]     INFO:       reading data/defaultParametersModulePSI46digV2/dacParameters_C2.dat
+[17:33:40.535]     INFO:       reading data/defaultParametersModulePSI46digV2/dacParameters_C3.dat
+[17:33:40.537]     INFO:       reading data/defaultParametersModulePSI46digV2/dacParameters_C4.dat
+[17:33:40.538]     INFO:       reading data/defaultParametersModulePSI46digV2/dacParameters_C5.dat
+[17:33:40.540]     INFO:       reading data/defaultParametersModulePSI46digV2/dacParameters_C6.dat
+[17:33:40.542]     INFO:       reading data/defaultParametersModulePSI46digV2/dacParameters_C7.dat
+[17:33:40.543]     INFO:       reading data/defaultParametersModulePSI46digV2/dacParameters_C8.dat
+[17:33:40.545]     INFO:       reading data/defaultParametersModulePSI46digV2/dacParameters_C9.dat
+[17:33:40.546]     INFO:       reading data/defaultParametersModulePSI46digV2/dacParameters_C10.dat
+[17:33:40.548]     INFO:       reading data/defaultParametersModulePSI46digV2/dacParameters_C11.dat
+[17:33:40.549]     INFO:       reading data/defaultParametersModulePSI46digV2/dacParameters_C12.dat
+[17:33:40.551]     INFO:       reading data/defaultParametersModulePSI46digV2/dacParameters_C13.dat
+[17:33:40.552]     INFO:       reading data/defaultParametersModulePSI46digV2/dacParameters_C14.dat
+[17:33:40.553]     INFO:       reading data/defaultParametersModulePSI46digV2/dacParameters_C15.dat
+[17:33:40.555]     INFO:       reading data/defaultParametersModulePSI46digV2/tbmParameters.dat
+[17:33:40.556]     INFO:       reading data/defaultParametersModulePSI46digV2/defaultMaskFile.dat
+[17:33:40.557]     INFO:       reading data/defaultParametersModulePSI46digV2/trimParameters_C0.dat
+[17:33:40.594]     INFO:       reading data/defaultParametersModulePSI46digV2/trimParameters_C1.dat
+[17:33:40.629]     INFO:       reading data/defaultParametersModulePSI46digV2/trimParameters_C2.dat
+[17:33:40.662]     INFO:       reading data/defaultParametersModulePSI46digV2/trimParameters_C3.dat
+[17:33:40.696]     INFO:       reading data/defaultParametersModulePSI46digV2/trimParameters_C4.dat
+[17:33:40.730]     INFO:       reading data/defaultParametersModulePSI46digV2/trimParameters_C5.dat
+[17:33:40.764]     INFO:       reading data/defaultParametersModulePSI46digV2/trimParameters_C6.dat
+[17:33:40.797]     INFO:       reading data/defaultParametersModulePSI46digV2/trimParameters_C7.dat
+[17:33:40.831]     INFO:       reading data/defaultParametersModulePSI46digV2/trimParameters_C8.dat
+[17:33:40.865]     INFO:       reading data/defaultParametersModulePSI46digV2/trimParameters_C9.dat
+[17:33:40.899]     INFO:       reading data/defaultParametersModulePSI46digV2/trimParameters_C10.dat
+[17:33:40.932]     INFO:       reading data/defaultParametersModulePSI46digV2/trimParameters_C11.dat
+[17:33:40.966]     INFO:       reading data/defaultParametersModulePSI46digV2/trimParameters_C12.dat
+[17:33:40.999]     INFO:       reading data/defaultParametersModulePSI46digV2/trimParameters_C13.dat
+[17:33:41.033]     INFO:       reading data/defaultParametersModulePSI46digV2/trimParameters_C14.dat
+[17:33:41.066]     INFO:       reading data/defaultParametersModulePSI46digV2/trimParameters_C15.dat
+[17:33:41.100]     INFO:       reading data/defaultParametersModulePSI46digV2/tbParameters.dat
+[17:33:41.101]    QUIET: Instanciating API for pxar 1.4.4
+[17:33:41.101]     INFO: Log level: INFO
+[17:33:44.177]    QUIET: Connection to board DTB_WRMLUE opened.
+[17:33:44.181]     INFO: DTB startup information
+--- DTB info------------------------------------------
+Board id:    0
+HW version:  
+FW version:  3.0
+SW version:  3.1
+USB id:      
+MAC address: 000000000000
+Hostname:    
+Comment:     
+------------------------------------------------------
+[17:33:44.184]     INFO: RPC call hashes of host and DTB match: 392669958
+[17:33:45.853]     INFO: DUT info: 
+[17:33:45.853]     INFO: The DUT currently contains the following objects:
+[17:33:45.853]     INFO:  2 TBM Cores (2 ON)
+[17:33:45.853]     INFO: 	TBM Core alpha (0): 6 registers set
+[17:33:45.853]     INFO: 	TBM Core beta  (1): 6 registers set
+[17:33:45.853]     INFO: 16 ROCs (16 ON) with 4160 pixelConfigs
+[17:33:45.853]     INFO: 	ROC 0: 21 DACs set, Pixels: 0 masked, 4160 active.
+[17:33:45.853]     INFO: 	ROC 1: 21 DACs set, Pixels: 0 masked, 4160 active.
+[17:33:45.853]     INFO: 	ROC 2: 21 DACs set, Pixels: 0 masked, 4160 active.
+[17:33:45.853]     INFO: 	ROC 3: 21 DACs set, Pixels: 0 masked, 4160 active.
+[17:33:45.853]     INFO: 	ROC 4: 21 DACs set, Pixels: 0 masked, 4160 active.
+[17:33:45.853]     INFO: 	ROC 5: 21 DACs set, Pixels: 0 masked, 4160 active.
+[17:33:45.853]     INFO: 	ROC 6: 21 DACs set, Pixels: 0 masked, 4160 active.
+[17:33:45.853]     INFO: 	ROC 7: 21 DACs set, Pixels: 0 masked, 4160 active.
+[17:33:45.854]     INFO: 	ROC 8: 21 DACs set, Pixels: 0 masked, 4160 active.
+[17:33:45.854]     INFO: 	ROC 9: 21 DACs set, Pixels: 0 masked, 4160 active.
+[17:33:45.854]     INFO: 	ROC 10: 21 DACs set, Pixels: 0 masked, 4160 active.
+[17:33:45.854]     INFO: 	ROC 11: 21 DACs set, Pixels: 0 masked, 4160 active.
+[17:33:45.854]     INFO: 	ROC 12: 21 DACs set, Pixels: 0 masked, 4160 active.
+[17:33:45.854]     INFO: 	ROC 13: 21 DACs set, Pixels: 0 masked, 4160 active.
+[17:33:45.854]     INFO: 	ROC 14: 21 DACs set, Pixels: 0 masked, 4160 active.
+[17:33:45.854]     INFO: 	ROC 15: 21 DACs set, Pixels: 0 masked, 4160 active.
+[17:33:46.629]     INFO:       reading data/defaultParametersModulePSI46digV2/phCalibrationFitTanH_C0.dat
+[17:33:46.629]    ERROR: <ConfigParameters.cc/readGainPedestalParameters:L897> cannot open data/defaultParametersModulePSI46digV2/phCalibrationFitTanH_C0.dat for reading PH calibration constants
+[17:33:46.797]     INFO:       reading data/defaultParametersModulePSI46digV2/phCalibrationFitTanH_C0.dat
+[17:33:46.797]    ERROR: <ConfigParameters.cc/readGainPedestalParameters:L897> cannot open data/defaultParametersModulePSI46digV2/phCalibrationFitTanH_C0.dat for reading PH calibration constants
+[17:33:47.097]     INFO:       reading data/defaultParametersModulePSI46digV2/phCalibrationFitTanH_C0.dat
+[17:33:47.097]    ERROR: <ConfigParameters.cc/readGainPedestalParameters:L897> cannot open data/defaultParametersModulePSI46digV2/phCalibrationFitTanH_C0.dat for reading PH calibration constants
+[17:34:01.298]     INFO: ######################################################################
+[17:34:01.298]     INFO: PixTestPretest::doTest()
+[17:34:01.298]     INFO: ######################################################################
+[17:34:01.307]     INFO:    ----------------------------------------------------------------------
+[17:34:01.307]     INFO:    PixTestPretest::programROC() 
+[17:34:01.307]     INFO:    ----------------------------------------------------------------------
+[17:34:19.347]     INFO: PixTestPretest::programROC() done: ROCs 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 cannot be programmed! Error!
+[17:34:19.347]     INFO: IA differences per ROC:  0.0 0.8 0.8 0.8 0.8 0.8 0.8 0.8 0.8 0.8 0.8 0.8 0.0 0.8 0.8 0.8
+[17:34:19.516]     INFO: ######################################################################
+[17:34:19.516]     INFO: ERROR: some ROCs are not programmable; stop
+[17:34:19.516]     INFO: ######################################################################
+[17:35:02.614]     INFO: ######################################################################
+[17:35:02.614]     INFO: PixTestPretest::doTest()
+[17:35:02.614]     INFO: ######################################################################
+[17:35:02.642]     INFO:    ----------------------------------------------------------------------
+[17:35:02.642]     INFO:    PixTestPretest::programROC() 
+[17:35:02.642]     INFO:    ----------------------------------------------------------------------
+[17:35:20.680]     INFO: PixTestPretest::programROC() done: ROCs 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 cannot be programmed! Error!
+[17:35:20.680]     INFO: IA differences per ROC:  0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+[17:35:20.806]     INFO: ######################################################################
+[17:35:20.806]     INFO: ERROR: some ROCs are not programmable; stop
+[17:35:20.806]     INFO: ######################################################################
+[17:35:57.484]    QUIET: Connection to board 0 closed.

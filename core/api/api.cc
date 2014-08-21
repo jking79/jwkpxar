@@ -423,6 +423,8 @@ void api::Pon() {
   programDUT();
 }
 
+uint32_t api::getDefaultPGPeriod() { return _dut->pg_sum; }
+
 bool api::SignalProbe(std::string probe, std::string name) {
 
   if(!_hal->status()) {return false;}
@@ -1122,6 +1124,10 @@ bool api::daqStatus(uint8_t & perFull) {
 		   << "/" << _daq_buffersize;
   return true;
 }
+
+void api::halTbPgSingle(){ _hal->_testboard->Pg_Single(); }
+void api::halTbFlush(){ _hal->_testboard->Flush(); }
+void api::halTbCDelay( int fPgPeriod ){ _hal->_testboard->cDelay( fPgPeriod ); }
 
 uint16_t api::daqTrigger(uint32_t nTrig, uint16_t period) {
 
